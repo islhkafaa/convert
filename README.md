@@ -2,7 +2,7 @@
 
 **High-performance, browser-native file conversion.**
 
-[![Version](https://img.shields.io/badge/version-0.6.1-ff5f1f?style=flat-square)](package.json)
+[![Version](https://img.shields.io/badge/version-0.7.0-ff5f1f?style=flat-square)](package.json)
 [![License](https://img.shields.io/badge/license-MIT-ff5f1f?style=flat-square)](LICENSE)
 [![Changelog](https://img.shields.io/badge/changelog-latest-ff5f1f?style=flat-square)](CHANGELOG.md)
 [![Bun](https://img.shields.io/badge/runtime-Bun-black?style=flat-square&logo=bun)](https://bun.sh)

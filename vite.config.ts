@@ -20,4 +20,7 @@ export default defineConfig({
       "@": path.resolve(__dirname, "./src"),
     },
   },
+  worker: {
+    format: "es",
+  },
 });

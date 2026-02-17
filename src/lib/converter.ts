@@ -14,59 +14,61 @@ export async function convertImage(
   quality: number = 0.92,
   onProgress?: (progress: number) => void,
 ): Promise<Blob> {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    const reader = new FileReader();
+  if (onProgress) onProgress(10);
 
-    reader.onload = (e) => {
-      img.src = e.target?.result as string;
-    };
+  const imgBitmap = await createImageBitmap(file);
+  if (onProgress) onProgress(30);
 
-    img.onload = () => {
-      try {
-        const canvas = document.createElement("canvas");
-        canvas.width = img.width;
-        canvas.height = img.height;
+  const { width, height } = imgBitmap;
+  let canvas: HTMLCanvasElement | OffscreenCanvas;
+  let ctx: CanvasRenderingContext2D | OffscreenRenderingContext | null;
 
-        const ctx = canvas.getContext("2d");
-        if (!ctx) {
-          reject(new Error("Failed to get canvas context"));
-          return;
-        }
+  if (typeof OffscreenCanvas !== "undefined") {
+    canvas = new OffscreenCanvas(width, height);
+    ctx = canvas.getContext("2d");
+  } else {
+    if (typeof document === "undefined") {
+      throw new Error("Canvas is not supported in this environment");
+    }
+    const htmlCanvas = document.createElement("canvas");
+    htmlCanvas.width = width;
+    htmlCanvas.height = height;
+    canvas = htmlCanvas;
+    ctx = htmlCanvas.getContext("2d");
+  }
 
-        ctx.drawImage(img, 0, 0);
+  if (!ctx) {
+    throw new Error("Failed to get canvas context");
+  }
 
-        if (onProgress) onProgress(50);
+  ctx.drawImage(imgBitmap, 0, 0);
+  imgBitmap.close();
 
-        const mimeType = `image/${outputFormat === "jpg" ? "jpeg" : outputFormat}`;
+  if (onProgress) onProgress(50);
 
-        canvas.toBlob(
-          (blob) => {
-            if (blob) {
-              if (onProgress) onProgress(100);
-              resolve(blob);
-            } else {
-              reject(new Error("Failed to convert image"));
-            }
-          },
-          mimeType,
-          quality,
-        );
-      } catch (error) {
-        reject(error);
-      }
-    };
+  const mimeType = `image/${outputFormat === "jpg" ? "jpeg" : outputFormat}`;
 
-    img.onerror = () => {
-      reject(new Error("Failed to load image"));
-    };
+  let blob: Blob;
+  if (canvas instanceof OffscreenCanvas) {
+    blob = await canvas.convertToBlob({
+      type: mimeType,
+      quality: quality,
+    });
+  } else {
+    blob = await new Promise((resolve, reject) => {
+      (canvas as HTMLCanvasElement).toBlob(
+        (b) => {
+          if (b) resolve(b);
+          else reject(new Error("Failed to convert image"));
+        },
+        mimeType,
+        quality,
+      );
+    });
+  }
 
-    reader.onerror = () => {
-      reject(new Error("Failed to read file"));
-    };
-
-    reader.readAsDataURL(file);
-  });
+  if (onProgress) onProgress(100);
+  return blob;
 }
 
 export async function convertAudio(
@@ -74,66 +76,60 @@ export async function convertAudio(
   _outputFormat: string,
   onProgress?: (progress: number) => void,
 ): Promise<Blob> {
-  const reader = new FileReader();
+  if (onProgress) onProgress(0);
 
-  return new Promise((resolve, reject) => {
-    reader.onload = async (e) => {
-      let audioContext: AudioContext | null = null;
-      try {
-        const arrayBuffer = e.target?.result as ArrayBuffer;
-        const AudioContextClass = (window.AudioContext ||
-          (window as unknown as { webkitAudioContext: typeof AudioContext })
-            .webkitAudioContext) as typeof AudioContext;
-        audioContext = new AudioContextClass();
+  const arrayBuffer = await file.arrayBuffer();
 
-        if (onProgress) onProgress(10);
+  const AudioContextClass =
+    (globalThis as unknown as { AudioContext: typeof AudioContext })
+      .AudioContext ||
+    (globalThis as unknown as { webkitAudioContext: typeof AudioContext })
+      .webkitAudioContext;
 
-        let audioBuffer: AudioBuffer;
-        try {
-          audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-        } catch {
-          audioBuffer = await new Promise((res, rej) => {
-            audioContext!.decodeAudioData(arrayBuffer, res, rej);
-          });
-        }
+  if (!AudioContextClass) {
+    throw new Error("AudioContext is not supported in this environment");
+  }
 
-        if (onProgress) onProgress(40);
+  const audioContext = new AudioContextClass();
 
-        const numberOfChannels = audioBuffer.numberOfChannels;
-        const sampleRate = audioBuffer.sampleRate;
-        const length = audioBuffer.length;
+  if (onProgress) onProgress(10);
 
-        if (onProgress) onProgress(50);
+  let audioBuffer: AudioBuffer;
+  try {
+    audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+  } catch {
+    audioBuffer = await new Promise((res, rej) => {
+      audioContext.decodeAudioData(arrayBuffer, res, rej);
+    });
+  }
 
-        const wavBuffer = encodeWAV(
-          audioBuffer,
-          numberOfChannels,
-          sampleRate,
-          length,
-          (progress) => {
-            if (onProgress) onProgress(50 + progress * 0.45);
-          },
-        );
+  if (onProgress) onProgress(40);
 
-        if (onProgress) onProgress(100);
+  const numberOfChannels = audioBuffer.numberOfChannels;
+  const sampleRate = audioBuffer.sampleRate;
+  const length = audioBuffer.length;
 
-        const blob = new Blob([wavBuffer], { type: "audio/wav" });
-        resolve(blob);
-      } catch (error) {
-        reject(error);
-      } finally {
-        if (audioContext) {
-          audioContext.close();
-        }
-      }
-    };
+  if (onProgress) onProgress(50);
 
-    reader.onerror = () => {
-      reject(new Error("Failed to read audio file"));
-    };
+  const wavBuffer = encodeWAV(
+    audioBuffer,
+    numberOfChannels,
+    sampleRate,
+    length,
+    (progress) => {
+      if (onProgress) onProgress(50 + progress * 0.45);
+    },
+  );
 
-    reader.readAsArrayBuffer(file);
-  });
+  if (onProgress) onProgress(100);
+
+  const blob = new Blob([wavBuffer], { type: "audio/wav" });
+
+  if (audioContext.close) {
+    await audioContext.close();
+  }
+
+  return blob;
 }
 
 function encodeWAV(

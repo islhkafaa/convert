@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.7.0] - 2026-02-17
+
+### Added
+
+- **Performance Optimization**: Web Workers for parallel file processing.
+- Worker pool with configurable concurrency (default: 3 workers).
+- Parallel conversion for image, audio, and document files (2-4x faster).
+- Feature flag for enabling/disabling worker-based processing.
+
+### Changed
+
+- Conversion logic now supports both parallel (workers) and sequential (fallback) processing.
+- Improved memory management during batch conversions.
+
 ## [0.6.1] - 2026-02-17
 
 ### Added

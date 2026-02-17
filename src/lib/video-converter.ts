@@ -24,14 +24,9 @@ export async function loadFFmpeg(
   const baseURL = "ffmpeg";
 
   try {
-    const coreURL = new URL(
-      `${baseURL}/ffmpeg-core.js`,
-      document.location.origin,
-    ).href;
-    const wasmURL = new URL(
-      `${baseURL}/ffmpeg-core.wasm`,
-      document.location.origin,
-    ).href;
+    const coreURL = new URL(`${baseURL}/ffmpeg-core.js`, location.origin).href;
+    const wasmURL = new URL(`${baseURL}/ffmpeg-core.wasm`, location.origin)
+      .href;
 
     await ffmpeg.load({
       coreURL: await toBlobURL(coreURL, "text/javascript"),

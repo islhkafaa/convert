@@ -159,9 +159,14 @@ async function htmlToPdf(
 
   if (onProgress) onProgress(30);
 
-  const parser = new DOMParser();
-  const htmlDoc = parser.parseFromString(html, "text/html");
-  const text = htmlDoc.body.textContent || "";
+  let text: string;
+  if (typeof DOMParser !== "undefined") {
+    const parser = new DOMParser();
+    const htmlDoc = parser.parseFromString(html, "text/html");
+    text = htmlDoc.body.textContent || "";
+  } else {
+    text = html.replace(/<[^>]*>?/gm, "").replace(/&nbsp;/g, " ");
+  }
 
   if (onProgress) onProgress(60);
 
@@ -207,9 +212,14 @@ async function htmlToText(
 
   if (onProgress) onProgress(50);
 
-  const parser = new DOMParser();
-  const htmlDoc = parser.parseFromString(html, "text/html");
-  const text = htmlDoc.body.textContent || "";
+  let text: string;
+  if (typeof DOMParser !== "undefined") {
+    const parser = new DOMParser();
+    const htmlDoc = parser.parseFromString(html, "text/html");
+    text = htmlDoc.body.textContent || "";
+  } else {
+    text = html.replace(/<[^>]*>?/gm, "").replace(/&nbsp;/g, " ");
+  }
 
   if (onProgress) onProgress(100);
 
@@ -222,7 +232,10 @@ function getFileExtension(filename: string): string {
 }
 
 function escapeHtml(text: string): string {
-  const div = document.createElement("div");
-  div.textContent = text;
-  return div.innerHTML;
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
