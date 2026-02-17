@@ -12,7 +12,7 @@ export async function loadFFmpeg(
   ffmpeg = new FFmpeg();
 
   ffmpeg.on("log", ({ message }) => {
-    console.log(message);
+    console.log("FFmpeg Log:", message);
   });
 
   ffmpeg.on("progress", ({ progress }) => {
@@ -21,28 +21,54 @@ export async function loadFFmpeg(
     }
   });
 
-  const baseURL = "https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd";
+  const baseURL = "ffmpeg";
 
-  await ffmpeg.load({
-    coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, "text/javascript"),
-    wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, "application/wasm"),
-  });
+  try {
+    const coreURL = new URL(
+      `${baseURL}/ffmpeg-core.js`,
+      document.location.origin,
+    ).href;
+    const wasmURL = new URL(
+      `${baseURL}/ffmpeg-core.wasm`,
+      document.location.origin,
+    ).href;
 
-  isLoaded = true;
+    await ffmpeg.load({
+      coreURL: await toBlobURL(coreURL, "text/javascript"),
+      wasmURL: await toBlobURL(wasmURL, "application/wasm"),
+    });
+    isLoaded = true;
+  } catch (error) {
+    console.error("FFmpeg Load Error:", error);
+    const errorMessage =
+      error instanceof Error
+        ? error.message
+        : typeof error === "string"
+          ? error
+          : JSON.stringify(error);
+
+    throw new Error(`Failed to load FFmpeg: ${errorMessage}`);
+  }
 }
 
 export async function convertVideo(
   file: File,
   outputFormat: string,
   quality: "low" | "medium" | "high" = "medium",
+  onProgress?: (progress: number) => void,
 ): Promise<Blob> {
   if (!ffmpeg || !isLoaded) {
-    await loadFFmpeg();
+    await loadFFmpeg(onProgress);
   }
 
   if (!ffmpeg) {
     throw new Error("FFmpeg failed to initialize");
   }
+
+  const progressHandler = ({ progress }: { progress: number }) => {
+    if (onProgress) onProgress(Math.round(progress * 100));
+  };
+  ffmpeg.on("progress", progressHandler);
 
   const inputName = "input" + getFileExtension(file.name);
   const outputName = `output.${outputFormat}`;
@@ -51,26 +77,55 @@ export async function convertVideo(
 
   const qualityArgs = getQualityArgs(outputFormat, quality);
 
-  await ffmpeg.exec(["-i", inputName, ...qualityArgs, outputName]);
+  try {
+    const result = await ffmpeg.exec([
+      "-i",
+      inputName,
+      ...qualityArgs,
+      outputName,
+    ]);
 
-  const data = await ffmpeg.readFile(outputName);
+    if (result !== 0) {
+      throw new Error(
+        `FFmpeg execution failed with exit code ${result}. Check console for details.`,
+      );
+    }
 
-  await ffmpeg.deleteFile(inputName);
-  await ffmpeg.deleteFile(outputName);
+    const data = await ffmpeg.readFile(outputName);
 
-  const mimeType = getMimeType(outputFormat);
+    await ffmpeg.deleteFile(inputName);
+    await ffmpeg.deleteFile(outputName);
 
-  let uint8Data: Uint8Array;
-  if (typeof data === "string") {
-    uint8Data = new TextEncoder().encode(data);
-  } else {
-    const isShared =
-      typeof SharedArrayBuffer !== "undefined" &&
-      data.buffer instanceof SharedArrayBuffer;
-    uint8Data = isShared ? new Uint8Array(data).slice() : new Uint8Array(data);
+    const mimeType = getMimeType(outputFormat);
+
+    let uint8Data: Uint8Array;
+    if (typeof data === "string") {
+      uint8Data = new TextEncoder().encode(data);
+    } else {
+      const isShared =
+        typeof SharedArrayBuffer !== "undefined" &&
+        data.buffer instanceof SharedArrayBuffer;
+      uint8Data = isShared
+        ? new Uint8Array(data).slice()
+        : new Uint8Array(data);
+    }
+
+    return new Blob([uint8Data as unknown as BlobPart], { type: mimeType });
+  } catch (error) {
+    try {
+      if (ffmpeg) {
+        await ffmpeg.deleteFile(inputName);
+        await ffmpeg.deleteFile(outputName);
+      }
+    } catch {
+      // Ignore cleanup errors
+    }
+    throw error;
+  } finally {
+    if (ffmpeg) {
+      ffmpeg.off("progress", progressHandler);
+    }
   }
-
-  return new Blob([uint8Data as unknown as BlobPart], { type: mimeType });
 }
 
 function getFileExtension(filename: string): string {

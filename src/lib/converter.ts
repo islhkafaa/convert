@@ -206,7 +206,7 @@ export async function convertFile(
     case "video": {
       const videoQuality =
         quality >= 0.8 ? "high" : quality >= 0.5 ? "medium" : "low";
-      return convertVideo(file, outputFormat, videoQuality);
+      return convertVideo(file, outputFormat, videoQuality, onProgress);
     }
     default:
       throw new Error(`Conversion not supported for ${conversionType}`);
