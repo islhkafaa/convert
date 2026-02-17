@@ -2,7 +2,7 @@ import JSZip from "jszip";
 
 export async function createZipFromFiles(
   files: { name: string; blob: Blob }[],
-  zipName: string = "converted-files.zip",
+  _zipName: string = "converted-files.zip",
 ): Promise<Blob> {
   const zip = new JSZip();
 

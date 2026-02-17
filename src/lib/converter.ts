@@ -68,7 +68,7 @@ export async function convertImage(
 
 export async function convertAudio(
   file: File,
-  outputFormat: string,
+  _outputFormat: string,
   onProgress?: (progress: number) => void,
 ): Promise<Blob> {
   const reader = new FileReader();
@@ -87,7 +87,7 @@ export async function convertAudio(
         let audioBuffer: AudioBuffer;
         try {
           audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-        } catch (err) {
+        } catch (_err) {
           audioBuffer = await new Promise((res, rej) => {
             audioContext!.decodeAudioData(arrayBuffer, res, rej);
           });
