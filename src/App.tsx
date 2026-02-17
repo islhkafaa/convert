@@ -1,12 +1,18 @@
 import { convertFile, type ConversionProgress } from "@/lib/converter";
 import { formatBytes } from "@/lib/utils";
-import { AlertCircle, CheckCircle2, Download, Trash2, X } from "lucide-react";
+import {
+  createZipFromFiles,
+  downloadZip,
+  generateZipFilename,
+} from "@/lib/zip-utils";
+import { AlertCircle, CheckCircle2, Trash2, X } from "lucide-react";
 import { useState } from "react";
 import { ConversionControls } from "./components/conversion-controls";
 import {
   ConversionSelector,
   type ConversionType,
 } from "./components/conversion-selector";
+import { ConvertedFileItem } from "./components/converted-file-item";
 import { FilePreview } from "./components/file-preview";
 import { FileUploadZone } from "./components/file-upload-zone";
 import { FormatSelector } from "./components/format-selector";
@@ -148,8 +154,20 @@ export default function App() {
     URL.revokeObjectURL(url);
   };
 
-  const downloadAll = () => {
-    convertedFiles.forEach((file) => downloadFile(file));
+  const downloadAll = async () => {
+    const files = convertedFiles.map((file) => {
+      const originalName = file.originalFile.name
+        .split(".")
+        .slice(0, -1)
+        .join(".");
+      return {
+        name: `${originalName}.${file.outputFormat}`,
+        blob: file.convertedBlob,
+      };
+    });
+
+    const zipBlob = await createZipFromFiles(files);
+    downloadZip(zipBlob, generateZipFilename());
   };
 
   return (
@@ -309,37 +327,13 @@ export default function App() {
               <div className="border-2 border-border bg-background">
                 <div className="divide-y-2 divide-border">
                   {convertedFiles.map((file, index) => (
-                    <div
+                    <ConvertedFileItem
                       key={index}
-                      className="flex items-center justify-between p-4 group hover:bg-accent/50 transition-colors"
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 bg-primary/10 flex items-center justify-center border border-primary">
-                          <CheckCircle2 className="size-5 text-primary" />
-                        </div>
-                        <div>
-                          <p className="text-sm font-bold uppercase tracking-tight">
-                            {file.originalFile.name
-                              .split(".")
-                              .slice(0, -1)
-                              .join(".")}
-                            .{file.outputFormat}
-                          </p>
-                          <p className="text-[10px] text-muted-foreground font-mono">
-                            {formatBytes(file.convertedBlob.size)}
-                          </p>
-                        </div>
-                      </div>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => downloadFile(file)}
-                        className="uppercase tracking-wider text-xs"
-                      >
-                        <Download className="size-4" />
-                        Download
-                      </Button>
-                    </div>
+                      originalFile={file.originalFile}
+                      convertedBlob={file.convertedBlob}
+                      outputFormat={file.outputFormat}
+                      onDownload={() => downloadFile(file)}
+                    />
                   ))}
                 </div>
               </div>
