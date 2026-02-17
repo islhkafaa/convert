@@ -102,7 +102,9 @@ export default function App() {
             ? "mp4"
             : type === "document"
               ? "pdf"
-              : "zip",
+              : type === "archive"
+                ? "extract"
+                : "zip",
     );
     setSelectedFiles([]);
     setConvertedFiles([]);

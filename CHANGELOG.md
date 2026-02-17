@@ -2,6 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.7.0] - 2026-02-17
+
+### Added
+
+- Document conversion using PDF.js and jsPDF.
+- Support for PDF, TXT, and HTML formats.
+- PDF text extraction and creation.
+- Archive extraction for ZIP files.
+- ZIP repacking with optimized compression.
+- Multi-page PDF processing with progress tracking.
+
+### Changed
+
+- Updated format selector with document and archive options.
+- Improved default format selection logic.
+
 ## [0.6.0] - 2026-02-17
 
 ### Added
