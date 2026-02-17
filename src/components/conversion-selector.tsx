@@ -38,7 +38,7 @@ export function ConversionSelector({
             key={type.id}
             onClick={() => onChange(type.id)}
             className={`
-              flex items-center gap-2 px-6 py-3 border-2 font-medium transition-all
+              flex items-center justify-center gap-2 px-4 py-2 sm:px-6 sm:py-3 border-2 font-medium transition-all flex-1 sm:flex-none
               ${
                 value === type.id
                   ? "bg-primary text-primary-foreground border-primary"

@@ -17,12 +17,12 @@ export function ConversionControls({
   hasConvertedFiles,
 }: ConversionControlsProps) {
   return (
-    <div className="flex gap-3 flex-wrap">
+    <div className="flex flex-col sm:flex-row gap-3">
       <Button
         id="convert-button"
         onClick={onConvert}
         disabled={filesCount === 0 || isConverting}
-        className="uppercase tracking-wider"
+        className="uppercase tracking-wider w-full sm:w-auto"
       >
         {isConverting ? (
           <>
@@ -38,7 +38,7 @@ export function ConversionControls({
         <Button
           variant="outline"
           onClick={onDownloadAll}
-          className="uppercase tracking-wider"
+          className="uppercase tracking-wider w-full sm:w-auto"
         >
           <Download className="size-4" />
           Download All

@@ -1,3 +1,4 @@
+import { convertDocument } from "./document-converter";
 import { convertVideo } from "./video-converter";
 
 export interface ConversionProgress {
@@ -208,6 +209,8 @@ export async function convertFile(
         quality >= 0.8 ? "high" : quality >= 0.5 ? "medium" : "low";
       return convertVideo(file, outputFormat, videoQuality, onProgress);
     }
+    case "document":
+      return convertDocument(file, outputFormat, onProgress);
     default:
       throw new Error(`Conversion not supported for ${conversionType}`);
   }

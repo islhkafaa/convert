@@ -21,7 +21,7 @@ export function OfflineIndicator() {
 
   return (
     <div className="fixed top-0 left-0 right-0 z-50 bg-destructive border-b-2 border-destructive">
-      <div className="container mx-auto px-6 py-3">
+      <div className="container mx-auto px-4 py-3 md:px-6">
         <div className="flex items-center gap-3">
           <WifiOff className="size-5 text-destructive-foreground" />
           <div>

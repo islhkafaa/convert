@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.6.0] - 2026-02-17
+
+### Added
+
+- Video conversion support using FFmpeg.wasm (WebAssembly).
+- Support for MP4 (H.264), WebM (VP9), and AVI formats.
+- Keyboard shortcuts:
+  - `Ctrl/Cmd + O`: Open file picker.
+  - `Ctrl/Cmd + Enter`: Start conversion.
+  - `Escape`: Clear files.
+- PWA metadata and manifest for installability.
+- Offline status indicator.
+
+### Changed
+
+- Updated Button component to be Fast Refresh compatible.
+- Improved FilePreview performance using `URL.createObjectURL`.
+- Refactored icon handling to fix React render warnings.
+
+### Fixed
+
+- Resolved all ESLint and TypeScript errors for production readiness.
+- Fixed SharedArrayBuffer compatibility issues in Blob creation.
+- Addressed memory cleanup for video processing buffers.
+
 ## [0.5.0] - 2026-02-17
 
 ### Added

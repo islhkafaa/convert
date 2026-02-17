@@ -3,7 +3,7 @@ import { RefreshCw } from "lucide-react";
 export function Header() {
   return (
     <header className="border-b-2 border-border bg-background">
-      <div className="container mx-auto px-6 py-4">
+      <div className="container mx-auto px-4 py-3 md:px-6 md:py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-primary flex items-center justify-center">

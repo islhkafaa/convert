@@ -12,7 +12,7 @@ const acceptedFileTypes: Record<ConversionType, string> = {
   image: "image/*",
   video: "video/*",
   audio: "audio/*",
-  document: ".pdf,.doc,.docx,.txt,.rtf",
+  document: ".pdf,.txt,.html,.htm",
   archive: ".zip,.rar,.7z,.tar,.gz",
 };
 
@@ -104,7 +104,7 @@ export function FileUploadZone({
       onDrop={handleDrop}
       className={`
         border-2 border-dashed transition-all
-        min-h-[400px] flex flex-col items-center justify-center
+        min-h-[250px] md:min-h-[400px] flex flex-col items-center justify-center
         cursor-pointer
         ${
           isDragging

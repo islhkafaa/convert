@@ -49,7 +49,7 @@ export function InstallPrompt() {
   if (!showPrompt) return null;
 
   return (
-    <div className="fixed bottom-6 left-6 right-6 md:left-auto md:right-6 md:w-96 z-50">
+    <div className="fixed bottom-4 left-4 right-4 md:bottom-6 md:left-auto md:right-6 md:w-96 z-50">
       <div className="border-2 border-primary bg-background p-4">
         <div className="flex items-start justify-between gap-3">
           <div className="flex-1">

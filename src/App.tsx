@@ -94,7 +94,15 @@ export default function App() {
   const handleConversionTypeChange = (type: ConversionType) => {
     setConversionType(type);
     setOutputFormat(
-      type === "image" ? "png" : type === "audio" ? "mp3" : "mp4",
+      type === "image"
+        ? "png"
+        : type === "audio"
+          ? "mp3"
+          : type === "video"
+            ? "mp4"
+            : type === "document"
+              ? "pdf"
+              : "zip",
     );
     setSelectedFiles([]);
     setConvertedFiles([]);
@@ -207,8 +215,8 @@ export default function App() {
       <InstallPrompt />
       <Header />
 
-      <main className="container mx-auto px-6 py-12">
-        <div className="max-w-5xl mx-auto space-y-12">
+      <main className="container mx-auto px-4 py-6 md:px-6 md:py-12">
+        <div className="max-w-5xl mx-auto space-y-8 md:space-y-12">
           {error && (
             <div className="border-2 border-destructive bg-destructive/10 p-4 flex items-start gap-3">
               <AlertCircle className="size-5 text-destructive shrink-0 mt-0.5" />
@@ -285,29 +293,29 @@ export default function App() {
                     return (
                       <div
                         key={index}
-                        className="flex items-center justify-between p-4 group hover:bg-accent/50 transition-colors"
+                        className="flex flex-col sm:flex-row items-center justify-between p-4 gap-4 group hover:bg-accent/50 transition-colors"
                       >
-                        <div className="flex items-center gap-4 flex-1">
+                        <div className="flex items-center gap-4 flex-1 w-full sm:w-auto">
                           <FilePreview
                             file={file}
                             conversionType={conversionType}
                           />
-                          <div className="flex-1">
-                            <p className="text-sm font-bold uppercase tracking-tight">
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm font-bold uppercase tracking-tight truncate max-w-[200px] sm:max-w-xs md:max-w-md">
                               {file.name}
                             </p>
                             <p className="text-[10px] text-muted-foreground font-mono">
                               {formatBytes(file.size)}
                             </p>
                             {progress && progress.status !== "pending" && (
-                              <div className="mt-2">
+                              <div className="mt-2 text-[10px] font-mono">
                                 {progress.status === "converting" && (
                                   <div className="space-y-1">
                                     <Progress
                                       value={progress.progress}
                                       className="h-1"
                                     />
-                                    <p className="text-[10px] text-muted-foreground font-mono">
+                                    <p className="text-muted-foreground">
                                       {Math.round(progress.progress)}%
                                     </p>
                                   </div>
@@ -315,13 +323,11 @@ export default function App() {
                                 {progress.status === "completed" && (
                                   <div className="flex items-center gap-1 text-primary">
                                     <CheckCircle2 className="size-3" />
-                                    <p className="text-[10px] font-mono">
-                                      COMPLETED
-                                    </p>
+                                    <p>COMPLETED</p>
                                   </div>
                                 )}
                                 {progress.status === "error" && (
-                                  <p className="text-[10px] text-destructive font-mono">
+                                  <p className="text-destructive">
                                     ERROR: {progress.error}
                                   </p>
                                 )}
@@ -332,7 +338,7 @@ export default function App() {
                         <button
                           onClick={() => removeFile(index)}
                           disabled={isConverting}
-                          className="p-2 border-2 border-transparent hover:border-destructive hover:text-destructive transition-all disabled:opacity-50"
+                          className="p-2 border-2 border-transparent hover:border-destructive hover:text-destructive transition-all disabled:opacity-50 w-full sm:w-auto flex justify-center sm:block"
                         >
                           <Trash2 className="size-4" />
                         </button>

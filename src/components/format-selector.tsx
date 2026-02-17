@@ -29,6 +29,7 @@ const outputFormats: Record<
   document: [
     { value: "txt", label: "TXT" },
     { value: "pdf", label: "PDF" },
+    { value: "html", label: "HTML" },
   ],
   archive: [{ value: "zip", label: "ZIP" }],
 };
@@ -51,7 +52,7 @@ export function FormatSelector({
             key={format.value}
             onClick={() => onFormatChange(format.value)}
             className={`
-              px-4 py-2 border-2 font-medium text-sm transition-all uppercase tracking-wider
+              px-4 py-2 border-2 font-medium text-sm transition-all uppercase tracking-wider flex-1 sm:flex-none
               ${
                 selectedFormat === format.value
                   ? "bg-primary text-primary-foreground border-primary"

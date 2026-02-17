@@ -1,6 +1,6 @@
 # Convert
 
-Version 0.5.0 | [Changelog](CHANGELOG.md) | [License](LICENSE)
+Version 0.6.0 | [Changelog](CHANGELOG.md) | [License](LICENSE)
 
 A high-performance, browser-native file conversion utility that processes everything locally on your device.
 
@@ -9,14 +9,15 @@ A high-performance, browser-native file conversion utility that processes everyt
 - Privacy first: All file transformations happen in your browser. No data ever leaves your computer.
 - Zero server-side latency: Local processing means instant starts and no upload/download bottlenecks.
 - Batch processing: Convert multiple files simultaneously and download them all in a single zip archive.
-- Fine-grained control: Adjustable quality settings for images and metadata preservation.
-- Performance: Uses modern browser APIs like Canvas and Web Audio for efficient processing.
+- Fine-grained control: Adjustable quality settings for images and video presets.
+- Performance: Uses modern browser APIs and WebAssembly (FFmpeg) for industry-standard results.
 
 ## Tech Stack
 
 - React
 - Bun
 - Tailwind CSS
+- FFmpeg.wasm
 - Lucide Icons
 - JSZip
 
