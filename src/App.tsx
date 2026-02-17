@@ -6,7 +6,7 @@ import {
   generateZipFilename,
 } from "@/lib/zip-utils";
 import { AlertCircle, CheckCircle2, Trash2, X } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ConversionControls } from "./components/conversion-controls";
 import {
   ConversionSelector,
@@ -17,6 +17,8 @@ import { FilePreview } from "./components/file-preview";
 import { FileUploadZone } from "./components/file-upload-zone";
 import { FormatSelector } from "./components/format-selector";
 import { Header } from "./components/header";
+import { InstallPrompt } from "./components/install-prompt";
+import { OfflineIndicator } from "./components/offline-indicator";
 import { QualityControls } from "./components/quality-controls";
 import { Button } from "./components/ui/button";
 import { Progress } from "./components/ui/progress";
@@ -38,6 +40,35 @@ export default function App() {
     Map<string, ConversionProgress>
   >(new Map());
   const [convertedFiles, setConvertedFiles] = useState<ConvertedFile[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === "o") {
+        e.preventDefault();
+        fileInputRef.current?.click();
+      }
+
+      if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+        e.preventDefault();
+        if (selectedFiles.length > 0 && !isConverting) {
+          document.getElementById("convert-button")?.click();
+        }
+      }
+
+      if (e.key === "Escape") {
+        if (selectedFiles.length > 0 || convertedFiles.length > 0) {
+          setSelectedFiles([]);
+          setConvertedFiles([]);
+          setConversionProgress(new Map());
+          setError(null);
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [selectedFiles, convertedFiles, isConverting]);
 
   const handleFilesSelected = (files: File[]) => {
     setSelectedFiles((prev) => [...prev, ...files]);
@@ -172,6 +203,8 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-background text-foreground selection:bg-primary selection:text-primary-foreground">
+      <OfflineIndicator />
+      <InstallPrompt />
       <Header />
 
       <main className="container mx-auto px-6 py-12">

@@ -19,6 +19,7 @@ export function ConversionControls({
   return (
     <div className="flex gap-3 flex-wrap">
       <Button
+        id="convert-button"
         onClick={onConvert}
         disabled={filesCount === 0 || isConverting}
         className="uppercase tracking-wider"
