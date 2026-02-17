@@ -102,13 +102,13 @@ export function FileUploadZone({
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
       className={`
-        border-2 border-dashed transition-all
+        border-2 border-dashed transition-all duration-300
         min-h-[250px] md:min-h-[400px] flex flex-col items-center justify-center
-        cursor-pointer
+        cursor-pointer group
         ${
           isDragging
-            ? "border-primary bg-primary/10"
-            : "border-border hover:border-accent hover:bg-accent/50"
+            ? "border-primary bg-primary/5 scale-[1.02]"
+            : "border-border hover:border-primary/50 hover:bg-muted/50"
         }
       `}
       onClick={() => document.getElementById("file-input")?.click()}
@@ -122,13 +122,17 @@ export function FileUploadZone({
         className="hidden"
       />
 
-      <div className="text-center space-y-4 px-6">
-        <div className="w-16 h-16 mx-auto border-2 border-border bg-muted flex items-center justify-center">
-          <Upload className="size-8 text-foreground" />
+      <div className="text-center space-y-6 px-6">
+        <div
+          className={`w-20 h-20 mx-auto border-2 border-border bg-muted flex items-center justify-center transition-all duration-300 ${isDragging ? "scale-110 border-primary" : "group-hover:border-primary/50"}`}
+        >
+          <Upload
+            className={`size-10 text-foreground transition-transform duration-300 ${isDragging ? "animate-bounce" : ""}`}
+          />
         </div>
 
         <div>
-          <p className="text-lg font-medium mb-2 uppercase tracking-wide">
+          <p className="text-xl font-semibold mb-2 uppercase tracking-wide">
             Drop {conversionType} files here
           </p>
           <p className="text-sm text-muted-foreground uppercase tracking-wider">
@@ -136,7 +140,7 @@ export function FileUploadZone({
           </p>
         </div>
 
-        <p className="text-[10px] text-muted-foreground font-mono">
+        <p className="text-xs text-muted-foreground font-mono font-medium">
           MAX 100MB PER FILE
         </p>
       </div>

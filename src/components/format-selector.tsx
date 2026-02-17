@@ -41,27 +41,30 @@ export function FormatSelector({
   const formats = outputFormats[conversionType];
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       <label className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">
         Output Format
       </label>
       <div className="flex gap-2 flex-wrap">
-        {formats.map((format) => (
-          <button
-            key={format.value}
-            onClick={() => onFormatChange(format.value)}
-            className={`
-              px-4 py-2 border-2 font-medium text-sm transition-all uppercase tracking-wider flex-1 sm:flex-none
-              ${
-                selectedFormat === format.value
-                  ? "bg-primary text-primary-foreground border-primary"
-                  : "bg-background text-foreground border-border hover:bg-accent hover:border-accent"
-              }
-            `}
-          >
-            {format.label}
-          </button>
-        ))}
+        {formats.map((format) => {
+          const isActive = selectedFormat === format.value;
+          return (
+            <button
+              key={format.value}
+              onClick={() => onFormatChange(format.value)}
+              className={`
+                px-5 py-2.5 border-2 font-semibold text-sm transition-all duration-200 uppercase tracking-wider flex-1 sm:flex-none
+                ${
+                  isActive
+                    ? "bg-primary text-primary-foreground border-primary"
+                    : "bg-background text-foreground border-border hover:bg-muted hover:border-primary/30"
+                }
+              `}
+            >
+              {format.label}
+            </button>
+          );
+        })}
       </div>
     </div>
   );

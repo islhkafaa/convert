@@ -19,12 +19,14 @@ export function QualityControls({
   if (!supportsQuality) return null;
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       <div className="flex items-center justify-between">
         <label className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">
           Quality
         </label>
-        <span className="text-xs font-mono text-foreground">{quality}%</span>
+        <span className="text-sm font-mono font-semibold text-foreground px-2 py-1 bg-muted border border-border">
+          {quality}%
+        </span>
       </div>
       <Slider
         value={[quality]}
@@ -34,7 +36,7 @@ export function QualityControls({
         step={1}
         className="w-full"
       />
-      <div className="flex justify-between text-[10px] text-muted-foreground font-mono">
+      <div className="flex justify-between text-xs text-muted-foreground font-mono font-medium">
         <span>LOW</span>
         <span>HIGH</span>
       </div>

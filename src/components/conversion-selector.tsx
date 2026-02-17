@@ -24,23 +24,26 @@ export function ConversionSelector({
   onChange,
 }: ConversionSelectorProps) {
   return (
-    <div className="flex gap-2 flex-wrap">
+    <div className="grid grid-cols-2 sm:flex gap-3 flex-wrap">
       {conversionTypes.map((type) => {
         const IconComponent = type.icon;
+        const isActive = value === type.id;
         return (
           <button
             key={type.id}
             onClick={() => onChange(type.id)}
             className={`
-              flex items-center justify-center gap-2 px-4 py-2 sm:px-6 sm:py-3 border-2 font-medium transition-all flex-1 sm:flex-none
+              flex items-center justify-center gap-2 px-6 py-4 border-2 font-semibold transition-all duration-200 flex-1 sm:flex-none uppercase tracking-wide text-sm
               ${
-                value === type.id
-                  ? "bg-primary text-primary-foreground border-primary"
-                  : "bg-background text-foreground border-border hover:bg-accent hover:border-accent"
+                isActive
+                  ? "bg-primary text-primary-foreground border-primary scale-105"
+                  : "bg-background text-foreground border-border hover:bg-muted hover:border-primary/30 hover:scale-105"
               }
             `}
           >
-            <IconComponent className="size-5" />
+            <IconComponent
+              className={`size-5 transition-transform duration-200 ${isActive ? "scale-110" : ""}`}
+            />
             {type.label}
           </button>
         );

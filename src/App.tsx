@@ -289,11 +289,11 @@ export default function App() {
       <InstallPrompt />
       <Header />
 
-      <main className="container mx-auto px-4 py-6 md:px-6 md:py-12">
-        <div className="max-w-5xl mx-auto space-y-8 md:space-y-12">
+      <main className="container mx-auto px-4 py-8 md:px-6 md:py-16">
+        <div className="max-w-5xl mx-auto space-y-10 md:space-y-16">
           {error && (
-            <div className="border-2 border-destructive bg-destructive/10 p-4 flex items-start gap-3">
-              <AlertCircle className="size-5 text-destructive shrink-0 mt-0.5" />
+            <div className="border-2 border-destructive bg-destructive/10 p-5 flex items-start gap-4 animate-slideDown">
+              <AlertCircle className="size-6 text-destructive shrink-0 mt-0.5" />
               <div className="flex-1">
                 <p className="text-sm font-bold uppercase tracking-tight text-destructive mb-1">
                   Upload Error
@@ -309,7 +309,7 @@ export default function App() {
             </div>
           )}
 
-          <div className="space-y-6">
+          <div className="space-y-8">
             <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">
               Select Category
             </h2>
@@ -319,7 +319,7 @@ export default function App() {
             />
           </div>
 
-          <div className="space-y-6">
+          <div className="space-y-8">
             <FormatSelector
               conversionType={conversionType}
               selectedFormat={outputFormat}
@@ -334,7 +334,7 @@ export default function App() {
             outputFormat={outputFormat}
           />
 
-          <div className="space-y-6">
+          <div className="space-y-8">
             <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">
               Source Files
             </h2>
@@ -346,7 +346,7 @@ export default function App() {
           </div>
 
           {selectedFiles.length > 0 && (
-            <div className="space-y-6">
+            <div className="space-y-8">
               <div className="flex items-center justify-between">
                 <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">
                   Queue ({selectedFiles.length})
@@ -433,7 +433,7 @@ export default function App() {
           )}
 
           {convertedFiles.length > 0 && (
-            <div className="space-y-6">
+            <div className="space-y-8">
               <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">
                 Converted Files ({convertedFiles.length})
               </h2>
