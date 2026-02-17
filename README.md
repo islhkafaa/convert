@@ -1,49 +1,68 @@
 # Convert
 
+**High-performance, browser-native file conversion.**
+
 Version 0.6.0 | [Changelog](CHANGELOG.md) | [License](LICENSE)
 
-A high-performance, browser-native file conversion utility that processes everything locally on your device.
+---
 
-## Core Features
+Convert is a privacy-focused utility that processes media transformations entirely on your local device. By leveraging WebAssembly and modern browser APIs, it eliminates server-side latency and ensures your data never leaves your computer.
 
-- Privacy first: All file transformations happen in your browser. No data ever leaves your computer.
-- Zero server-side latency: Local processing means instant starts and no upload/download bottlenecks.
-- Batch processing: Convert multiple files simultaneously and download them all in a single zip archive.
-- Fine-grained control: Adjustable quality settings for images and video presets.
-- Performance: Uses modern browser APIs and WebAssembly (FFmpeg) for industry-standard results.
+## Features
+
+- **Privacy First**: All file transformations happen in-browser. No external servers or cloud uploads required.
+- **Zero Latency**: Local execution means instant processing without bandwidth or upload bottlenecks.
+- **Batch Operations**: Convert multiple files simultaneously and export as a unified ZIP archive.
+- **Granular Control**: Adjustable quality parameters, video presets, and format-specific configuration.
+- **PWA Ready**: Installable as a desktop application with offline support.
+- **Keyboard Shortcuts**: Standardized controls for opening files (`Ctrl+O`), starting conversions (`Ctrl+Enter`), and clearing the queue (`Esc`).
+
+## Supported Conversions
+
+- **Images**: PNG, JPG, WebP, AVIF
+- **Audio**: MP3, WAV, OGG, AAC
+- **Video**: MP4, WebM, MKV (via FFmpeg.wasm)
+- **Documents**: PDF and image-to-PDF transformations
 
 ## Tech Stack
 
-- React
-- Bun
-- Tailwind CSS
-- FFmpeg.wasm
-- Lucide Icons
-- JSZip
+| Category       | Technology                            |
+| :------------- | :------------------------------------ |
+| **Framework**  | React 19 + Vite 7                     |
+| **Runtime**    | Bun                                   |
+| **Processing** | FFmpeg.wasm, JSZip, pdfjs-dist, jspdf |
+| **Styling**    | Tailwind CSS 4, Shadcn UI             |
+| **Icons**      | Lucide React                          |
 
-## Usage
+## Development
 
-1. Select your target category (Image, Audio, etc).
-2. Choose your output format and optional quality settings.
-3. Drop your files or click to browse.
-4. Convert and download individually or as a batch.
+Ensure you have [Bun](https://bun.sh) installed.
 
-## Setup
-
-Install dependencies:
+### 1. Install Dependencies
 
 ```bash
 bun install
 ```
 
-Start the development server:
+### 2. Start Development Server
 
 ```bash
 bun dev
 ```
 
-Build for production:
+### 3. Build for Production
 
 ```bash
 bun run build
 ```
+
+## Usage Workflow
+
+1.  **Select Category**: Choose between Image, Audio, Video, or Document modules.
+2.  **Configure Output**: Set your target format and quality parameters.
+3.  **Input Files**: Drag and drop files into the upload zone or browse local storage.
+4.  **Execute**: Convert files individually or use the batch download for multiple assets.
+
+---
+
+_Built for performance and security._
