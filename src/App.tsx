@@ -11,7 +11,9 @@ import { FilePreview } from "./components/file-preview";
 import { FileUploadZone } from "./components/file-upload-zone";
 import { FormatSelector } from "./components/format-selector";
 import { Header } from "./components/header";
+import { QualityControls } from "./components/quality-controls";
 import { Button } from "./components/ui/button";
+import { Progress } from "./components/ui/progress";
 
 interface ConvertedFile {
   originalFile: File;
@@ -23,6 +25,7 @@ export default function App() {
   const [conversionType, setConversionType] = useState<ConversionType>("image");
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [outputFormat, setOutputFormat] = useState<string>("png");
+  const [quality, setQuality] = useState<number>(92);
   const [error, setError] = useState<string | null>(null);
   const [isConverting, setIsConverting] = useState(false);
   const [conversionProgress, setConversionProgress] = useState<
@@ -92,7 +95,7 @@ export default function App() {
           file,
           conversionType,
           outputFormat,
-          0.92,
+          quality / 100,
           (progress) => {
             progressMap.set(file.name, {
               fileName: file.name,
@@ -191,6 +194,13 @@ export default function App() {
             />
           </div>
 
+          <QualityControls
+            quality={quality}
+            onQualityChange={setQuality}
+            conversionType={conversionType}
+            outputFormat={outputFormat}
+          />
+
           <div className="space-y-6">
             <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">
               Source Files
@@ -242,16 +252,12 @@ export default function App() {
                               <div className="mt-2">
                                 {progress.status === "converting" && (
                                   <div className="space-y-1">
-                                    <div className="h-1 bg-muted w-full">
-                                      <div
-                                        className="h-full bg-primary transition-all"
-                                        style={{
-                                          width: `${progress.progress}%`,
-                                        }}
-                                      />
-                                    </div>
+                                    <Progress
+                                      value={progress.progress}
+                                      className="h-1"
+                                    />
                                     <p className="text-[10px] text-muted-foreground font-mono">
-                                      {progress.progress}%
+                                      {Math.round(progress.progress)}%
                                     </p>
                                   </div>
                                 )}
