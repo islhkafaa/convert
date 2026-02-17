@@ -1,3 +1,5 @@
+import { convertVideo } from "./video-converter";
+
 export interface ConversionProgress {
   fileName: string;
   progress: number;
@@ -78,16 +80,17 @@ export async function convertAudio(
       let audioContext: AudioContext | null = null;
       try {
         const arrayBuffer = e.target?.result as ArrayBuffer;
-        audioContext = new (
-          window.AudioContext || (window as any).webkitAudioContext
-        )();
+        const AudioContextClass = (window.AudioContext ||
+          (window as unknown as { webkitAudioContext: typeof AudioContext })
+            .webkitAudioContext) as typeof AudioContext;
+        audioContext = new AudioContextClass();
 
         if (onProgress) onProgress(10);
 
         let audioBuffer: AudioBuffer;
         try {
           audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
-        } catch (_err) {
+        } catch {
           audioBuffer = await new Promise((res, rej) => {
             audioContext!.decodeAudioData(arrayBuffer, res, rej);
           });
@@ -107,7 +110,7 @@ export async function convertAudio(
           sampleRate,
           length,
           (progress) => {
-            if (onProgress) onProgress(50 + progress * 0.45); // 50% to 95%
+            if (onProgress) onProgress(50 + progress * 0.45);
           },
         );
 
@@ -200,6 +203,11 @@ export async function convertFile(
       return convertImage(file, outputFormat, quality, onProgress);
     case "audio":
       return convertAudio(file, outputFormat, onProgress);
+    case "video": {
+      const videoQuality =
+        quality >= 0.8 ? "high" : quality >= 0.5 ? "medium" : "low";
+      return convertVideo(file, outputFormat, videoQuality);
+    }
     default:
       throw new Error(`Conversion not supported for ${conversionType}`);
   }

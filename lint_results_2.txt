@@ -1,0 +1,47 @@
+$ eslint .
+
+E:\Media\Projects\React\convert\src\components\file-preview.tsx
+  24:7  error  Error: Calling setState synchronously within an effect can trigger cascading renders
+
+Effects are intended to synchronize state between React and external systems such as manually updating the DOM, state management libraries, or other platform APIs. In general, the body of an effect should do one or both of the following:
+* Update external systems with the latest state from React.
+* Subscribe for updates from some external system, calling setState in a callback function when external state changes.
+
+Calling setState synchronously within an effect body causes cascading renders that can hurt performance, and is not recommended. (https://react.dev/learn/you-might-not-need-an-effect).
+
+E:\Media\Projects\React\convert\src\components\file-preview.tsx:24:7
+  22 |     if (conversionType === "image" && file.type.startsWith("image/")) {
+  23 |       url = URL.createObjectURL(file);
+> 24 |       setPreview(url);
+     |       ^^^^^^^^^^ Avoid calling setState() directly within an effect
+  25 |     } else {
+  26 |       setPreview(null);
+  27 |     }  react-hooks/set-state-in-effect
+  69:8  error  Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+E:\Media\Projects\React\convert\src\components\file-preview.tsx:69:8
+  67 |   return (
+  68 |     <div className="w-10 h-10 bg-muted flex items-center justify-center border border-border group-hover:bg-primary/10 transition-colors">
+> 69 |       <IconComponent className="size-5 text-primary" />
+     |        ^^^^^^^^^^^^^ This component is created during render
+  70 |     </div>
+  71 |   );
+  72 | }
+
+E:\Media\Projects\React\convert\src\components\file-preview.tsx:53:25
+  51 |   };
+  52 |
+> 53 |   const IconComponent = getIcon();
+     |                         ^^^^^^^^^ The component is created during render here
+  54 |
+  55 |   if (preview && conversionType === "image") {
+  56 |     return (                                                                                                                                                                                         react-hooks/static-components
+
+E:\Media\Projects\React\convert\src\components\ui\button.tsx
+  65:18  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+Γ£û 3 problems (3 errors, 0 warnings)
+
+error: script "lint" exited with code 1

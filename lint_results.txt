@@ -1,0 +1,45 @@
+$ eslint .
+
+E:\Media\Projects\React\convert\src\components\conversion-selector.tsx
+  15:67  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+E:\Media\Projects\React\convert\src\components\file-preview.tsx
+  33:6  warning  React Hook useEffect has a missing dependency: 'preview'. Either include it or remove the dependency array                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          react-hooks/exhaustive-deps
+  68:8  error    Error: Cannot create components during render
+
+Components created during render will reset their state each time they are created. Declare components outside of render.
+
+E:\Media\Projects\React\convert\src\components\file-preview.tsx:68:8
+  66 |   return (
+  67 |     <div className="w-10 h-10 bg-muted flex items-center justify-center border border-border group-hover:bg-primary/10 transition-colors">
+> 68 |       <Icon className="size-5 text-primary" />
+     |        ^^^^ This component is created during render
+  69 |     </div>
+  70 |   );
+  71 | }
+
+E:\Media\Projects\React\convert\src\components\file-preview.tsx:52:16
+  50 |   };
+  51 |
+> 52 |   const Icon = getIcon();
+     |                ^^^^^^^^^ The component is created during render here
+  53 |
+  54 |   if (preview && conversionType === "image") {
+  55 |     return (  react-hooks/static-components
+
+E:\Media\Projects\React\convert\src\components\install-prompt.tsx
+  6:56  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+E:\Media\Projects\React\convert\src\components\ui\button.tsx
+  65:18  error  Fast refresh only works when a file only exports components. Use a new file to share constants or functions between components  react-refresh/only-export-components
+
+E:\Media\Projects\React\convert\src\lib\converter.ts
+  84:45  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  92:18  error  '_err' is defined but never used          @typescript-eslint/no-unused-vars
+
+E:\Media\Projects\React\convert\src\lib\zip-utils.ts
+  5:3  error  '_zipName' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+Γ£û 8 problems (7 errors, 1 warning)
+
+error: script "lint" exited with code 1

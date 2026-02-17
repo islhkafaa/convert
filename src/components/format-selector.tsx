@@ -19,6 +19,7 @@ const outputFormats: Record<
   video: [
     { value: "mp4", label: "MP4" },
     { value: "webm", label: "WebM" },
+    { value: "avi", label: "AVI" },
   ],
   audio: [
     { value: "mp3", label: "MP3" },

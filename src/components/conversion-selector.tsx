@@ -1,3 +1,4 @@
+import type { LucideIcon } from "lucide-react";
 import { Archive, FileText, Image, Music, Video } from "lucide-react";
 
 export type ConversionType =
@@ -12,7 +13,11 @@ interface ConversionSelectorProps {
   onChange: (type: ConversionType) => void;
 }
 
-const conversionTypes: { id: ConversionType; label: string; icon: any }[] = [
+const conversionTypes: {
+  id: ConversionType;
+  label: string;
+  icon: LucideIcon;
+}[] = [
   { id: "image", label: "Image", icon: Image },
   { id: "video", label: "Video", icon: Video },
   { id: "audio", label: "Audio", icon: Music },
@@ -27,7 +32,7 @@ export function ConversionSelector({
   return (
     <div className="flex gap-2 flex-wrap">
       {conversionTypes.map((type) => {
-        const Icon = type.icon;
+        const IconComponent = type.icon;
         return (
           <button
             key={type.id}
@@ -41,7 +46,7 @@ export function ConversionSelector({
               }
             `}
           >
-            <Icon className="size-5" />
+            <IconComponent className="size-5" />
             {type.label}
           </button>
         );
