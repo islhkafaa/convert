@@ -1,12 +1,7 @@
 import type { LucideIcon } from "lucide-react";
-import { Archive, FileText, Image, Music, Video } from "lucide-react";
+import { FileText, Image, Music, Video } from "lucide-react";
 
-export type ConversionType =
-  | "image"
-  | "video"
-  | "audio"
-  | "document"
-  | "archive";
+export type ConversionType = "image" | "video" | "audio" | "document";
 
 interface ConversionSelectorProps {
   value: ConversionType;
@@ -22,7 +17,6 @@ const conversionTypes: {
   { id: "video", label: "Video", icon: Video },
   { id: "audio", label: "Audio", icon: Music },
   { id: "document", label: "Document", icon: FileText },
-  { id: "archive", label: "Archive", icon: Archive },
 ];
 
 export function ConversionSelector({

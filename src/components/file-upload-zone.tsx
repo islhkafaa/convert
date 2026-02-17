@@ -13,7 +13,6 @@ const acceptedFileTypes: Record<ConversionType, string> = {
   video: "video/*",
   audio: "audio/*",
   document: ".pdf,.txt,.html,.htm",
-  archive: ".zip,.rar,.7z,.tar,.gz",
 };
 
 const MAX_FILE_SIZE = 100 * 1024 * 1024;

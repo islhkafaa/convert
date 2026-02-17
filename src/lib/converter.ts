@@ -1,4 +1,3 @@
-import { convertArchive } from "./archive-converter";
 import { convertDocument } from "./document-converter";
 import { convertVideo } from "./video-converter";
 
@@ -212,8 +211,6 @@ export async function convertFile(
     }
     case "document":
       return convertDocument(file, outputFormat, onProgress);
-    case "archive":
-      return convertArchive(file, outputFormat, onProgress);
     default:
       throw new Error(`Conversion not supported for ${conversionType}`);
   }

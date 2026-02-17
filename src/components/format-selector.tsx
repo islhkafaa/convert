@@ -31,10 +31,6 @@ const outputFormats: Record<
     { value: "pdf", label: "PDF" },
     { value: "html", label: "HTML" },
   ],
-  archive: [
-    { value: "extract", label: "Extract" },
-    { value: "zip", label: "Repack ZIP" },
-  ],
 };
 
 export function FormatSelector({
