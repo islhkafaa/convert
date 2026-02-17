@@ -2,6 +2,27 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.8.0] - 2026-02-17
+
+### Added
+
+- **UI Redesign**: Modernized interface with a clean flat design, improved visual hierarchy, and better spacing.
+- **Advanced File Previews**: Real-time image thumbnails and detailed metadata extraction (dimensions, duration, size).
+- **Drag-and-Drop Reordering**: Reorder files in the queue using `dnd-kit` (desktop only).
+- **Custom Animations**: Added `animations.css` for smooth transitions and micro-interactions.
+- **Improved Typography**: Integrated Inter and JetBrains Mono fonts for better readability.
+- **Custom Scrollbar**: Themed scrollbar matching the dark aesthetic.
+
+### Changed
+
+- Updated layout spacing and section organization for better flow.
+- Enhanced file upload zone with scale and bounce animations.
+- Redesigned header with a sticky backdrop blur effect.
+
+### Fixed
+
+- Improved mobile experience by disabling drag-and-drop interactions to prevent touch scrolling conflicts.
+
 ## [0.7.0] - 2026-02-17
 
 ### Added

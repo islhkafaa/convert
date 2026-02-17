@@ -1,12 +1,26 @@
 import { convertFile, type ConversionProgress } from "@/lib/converter";
-import { formatBytes } from "@/lib/utils";
 import { WorkerPool } from "@/lib/worker-pool";
 import {
   createZipFromFiles,
   downloadZip,
   generateZipFilename,
 } from "@/lib/zip-utils";
-import { AlertCircle, CheckCircle2, Trash2, X } from "lucide-react";
+import {
+  closestCenter,
+  DndContext,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  type DragEndEvent,
+} from "@dnd-kit/core";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { AlertCircle, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { ConversionControls } from "./components/conversion-controls";
 import {
@@ -14,7 +28,7 @@ import {
   type ConversionType,
 } from "./components/conversion-selector";
 import { ConvertedFileItem } from "./components/converted-file-item";
-import { FilePreview } from "./components/file-preview";
+import { DraggableFileItem } from "./components/draggable-file-item";
 import { FileUploadZone } from "./components/file-upload-zone";
 import { FormatSelector } from "./components/format-selector";
 import { Header } from "./components/header";
@@ -22,19 +36,20 @@ import { InstallPrompt } from "./components/install-prompt";
 import { OfflineIndicator } from "./components/offline-indicator";
 import { QualityControls } from "./components/quality-controls";
 import { Button } from "./components/ui/button";
-import { Progress } from "./components/ui/progress";
 
 interface ConvertedFile {
-  originalFile: File;
+  originalFile: FileWithId;
   convertedBlob: Blob;
   outputFormat: string;
 }
+
+type FileWithId = File & { id: string };
 
 const USE_WORKERS = true;
 
 export default function App() {
   const [conversionType, setConversionType] = useState<ConversionType>("image");
-  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [selectedFiles, setSelectedFiles] = useState<FileWithId[]>([]);
   const [outputFormat, setOutputFormat] = useState<string>("png");
   const [quality, setQuality] = useState<number>(92);
   const [error, setError] = useState<string | null>(null);
@@ -43,8 +58,26 @@ export default function App() {
     Map<string, ConversionProgress>
   >(new Map());
   const [convertedFiles, setConvertedFiles] = useState<ConvertedFile[]>([]);
+  const [isMobile, setIsMobile] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const workerPoolRef = useRef<WorkerPool | null>(null);
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: isMobile ? { distance: 9999 } : undefined,
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    }),
+  );
+
+  useEffect(() => {
+    const checkMobile = () =>
+      setIsMobile(window.matchMedia("(max-width: 640px)").matches);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   useEffect(() => {
     if (USE_WORKERS) {
@@ -84,13 +117,29 @@ export default function App() {
   }, [selectedFiles, convertedFiles, isConverting]);
 
   const handleFilesSelected = (files: File[]) => {
-    setSelectedFiles((prev) => [...prev, ...files]);
+    const filesWithIds = files.map((file) =>
+      Object.assign(file, { id: crypto.randomUUID() }),
+    ) as FileWithId[];
+    setSelectedFiles((prev) => [...prev, ...filesWithIds]);
     setError(null);
   };
 
   const handleError = (errorMessage: string) => {
     setError(errorMessage);
     setTimeout(() => setError(null), 5000);
+  };
+
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+
+    if (over && active.id !== over.id) {
+      setSelectedFiles((items) => {
+        const oldIndex = items.findIndex((item) => item.id === active.id);
+        const newIndex = items.findIndex((item) => item.id === over.id);
+
+        return arrayMove(items, oldIndex, newIndex);
+      });
+    }
   };
 
   const removeFile = (index: number) => {
@@ -361,65 +410,32 @@ export default function App() {
                 </Button>
               </div>
               <div className="border-2 border-border bg-background">
-                <div className="divide-y-2 divide-border">
-                  {selectedFiles.map((file, index) => {
-                    const progress = conversionProgress.get(file.name);
-                    return (
-                      <div
-                        key={index}
-                        className="flex flex-col sm:flex-row items-center justify-between p-4 gap-4 group hover:bg-accent/50 transition-colors"
-                      >
-                        <div className="flex items-center gap-4 flex-1 w-full sm:w-auto">
-                          <FilePreview
+                <DndContext
+                  sensors={sensors}
+                  collisionDetection={closestCenter}
+                  onDragEnd={handleDragEnd}
+                >
+                  <SortableContext
+                    items={selectedFiles.map((f) => f.id)}
+                    strategy={verticalListSortingStrategy}
+                  >
+                    <div className="divide-y-2 divide-border">
+                      {selectedFiles.map((file, index) => {
+                        const progress = conversionProgress.get(file.name);
+                        return (
+                          <DraggableFileItem
+                            key={file.id}
                             file={file}
+                            index={index}
                             conversionType={conversionType}
+                            progress={progress}
+                            onRemove={removeFile}
                           />
-                          <div className="flex-1 min-w-0">
-                            <p className="text-sm font-bold uppercase tracking-tight truncate max-w-[200px] sm:max-w-xs md:max-w-md">
-                              {file.name}
-                            </p>
-                            <p className="text-[10px] text-muted-foreground font-mono">
-                              {formatBytes(file.size)}
-                            </p>
-                            {progress && progress.status !== "pending" && (
-                              <div className="mt-2 text-[10px] font-mono">
-                                {progress.status === "converting" && (
-                                  <div className="space-y-1">
-                                    <Progress
-                                      value={progress.progress}
-                                      className="h-1"
-                                    />
-                                    <p className="text-muted-foreground">
-                                      {Math.round(progress.progress)}%
-                                    </p>
-                                  </div>
-                                )}
-                                {progress.status === "completed" && (
-                                  <div className="flex items-center gap-1 text-primary">
-                                    <CheckCircle2 className="size-3" />
-                                    <p>COMPLETED</p>
-                                  </div>
-                                )}
-                                {progress.status === "error" && (
-                                  <p className="text-destructive">
-                                    ERROR: {progress.error}
-                                  </p>
-                                )}
-                              </div>
-                            )}
-                          </div>
-                        </div>
-                        <button
-                          onClick={() => removeFile(index)}
-                          disabled={isConverting}
-                          className="p-2 border-2 border-transparent hover:border-destructive hover:text-destructive transition-all disabled:opacity-50 w-full sm:w-auto flex justify-center sm:block"
-                        >
-                          <Trash2 className="size-4" />
-                        </button>
-                      </div>
-                    );
-                  })}
-                </div>
+                        );
+                      })}
+                    </div>
+                  </SortableContext>
+                </DndContext>
               </div>
 
               <ConversionControls
