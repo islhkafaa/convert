@@ -82,6 +82,41 @@
   --sidebar-ring: #ff5f1f;
 }
 
+:root[data-theme="light"] {
+  --radius: 0.375rem;
+  --background: #ffffff;
+  --foreground: #0a0a0a;
+  --card: #ffffff;
+  --card-foreground: #0a0a0a;
+  --popover: #ffffff;
+  --popover-foreground: #0a0a0a;
+  --primary: #ff5f1f;
+  --primary-foreground: #ffffff;
+  --secondary: #f5f5f5;
+  --secondary-foreground: #0a0a0a;
+  --muted: #f5f5f5;
+  --muted-foreground: #737373;
+  --accent: #f5f5f5;
+  --accent-foreground: #0a0a0a;
+  --destructive: #dc2626;
+  --border: #e5e5e5;
+  --input: #e5e5e5;
+  --ring: #ff5f1f;
+  --chart-1: #ff5f1f;
+  --chart-2: #ff8f5f;
+  --chart-3: #ffbf9f;
+  --chart-4: #e5e5e5;
+  --chart-5: #d4d4d4;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #0a0a0a;
+  --sidebar-primary: #ff5f1f;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f5f5f5;
+  --sidebar-accent-foreground: #0a0a0a;
+  --sidebar-border: #e5e5e5;
+  --sidebar-ring: #ff5f1f;
+}
+
 ::-webkit-scrollbar {
   width: 10px;
   height: 10px;
@@ -146,6 +181,9 @@
       BlinkMacSystemFont,
       "Segoe UI",
       sans-serif;
+    transition:
+      background-color 0.3s ease,
+      color 0.3s ease;
   }
 
   code,

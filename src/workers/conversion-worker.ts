@@ -1,7 +1,8 @@
 import { convertFile } from "../lib/converter";
 
 self.onmessage = async (e: MessageEvent) => {
-  const { type, jobId, file, outputFormat, quality, conversionType } = e.data;
+  const { type, jobId, file, outputFormat, quality, conversionType, options } =
+    e.data;
 
   if (type === "convert") {
     try {
@@ -11,19 +12,12 @@ self.onmessage = async (e: MessageEvent) => {
         outputFormat,
         quality,
         (progress) => {
-          self.postMessage({
-            type: "progress",
-            jobId,
-            progress,
-          });
+          self.postMessage({ type: "progress", jobId, progress });
         },
+        options,
       );
 
-      self.postMessage({
-        type: "complete",
-        jobId,
-        result: blob,
-      });
+      self.postMessage({ type: "complete", jobId, result: blob });
     } catch (error) {
       self.postMessage({
         type: "error",

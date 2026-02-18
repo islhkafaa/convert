@@ -22,6 +22,7 @@ import {
 } from "@dnd-kit/sortable";
 import { AlertCircle, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { AdvancedImageOptions } from "./components/advanced-image-options";
 import { ConversionControls } from "./components/conversion-controls";
 import {
   ConversionSelector,
@@ -36,6 +37,7 @@ import { InstallPrompt } from "./components/install-prompt";
 import { OfflineIndicator } from "./components/offline-indicator";
 import { QualityControls } from "./components/quality-controls";
 import { Button } from "./components/ui/button";
+import type { ImageOptions } from "./lib/image-processor";
 
 interface ConvertedFile {
   originalFile: FileWithId;
@@ -52,6 +54,7 @@ export default function App() {
   const [selectedFiles, setSelectedFiles] = useState<FileWithId[]>([]);
   const [outputFormat, setOutputFormat] = useState<string>("png");
   const [quality, setQuality] = useState<number>(92);
+  const [imageOptions, setImageOptions] = useState<ImageOptions>({});
   const [error, setError] = useState<string | null>(null);
   const [isConverting, setIsConverting] = useState(false);
   const [conversionProgress, setConversionProgress] = useState<
@@ -207,6 +210,7 @@ export default function App() {
                 outputFormat,
                 quality: quality / 100,
                 conversionType,
+                options: imageOptions,
               },
               (progress) => {
                 progressMap.set(file.name, {
@@ -266,6 +270,7 @@ export default function App() {
                 });
                 setConversionProgress(new Map(progressMap));
               },
+              imageOptions,
             );
 
             converted.push({
@@ -382,6 +387,13 @@ export default function App() {
             conversionType={conversionType}
             outputFormat={outputFormat}
           />
+
+          {conversionType === "image" && (
+            <AdvancedImageOptions
+              options={imageOptions}
+              onChange={setImageOptions}
+            />
+          )}
 
           <div className="space-y-8">
             <h2 className="text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground">

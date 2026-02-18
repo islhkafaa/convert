@@ -1,9 +1,12 @@
+import type { ImageOptions } from "./image-processor";
+
 export interface ConversionJob {
   id: string;
   file: File;
   outputFormat: string;
   quality: number;
   conversionType: string;
+  options?: ImageOptions;
 }
 
 export interface ConversionResult {
@@ -41,10 +44,8 @@ export class WorkerPool {
         new URL("../workers/conversion-worker.ts", import.meta.url),
         { type: "module" },
       );
-
       worker.onmessage = (e) => this.handleWorkerMessage(worker, e);
       worker.onerror = (e) => this.handleWorkerError(worker, e);
-
       this.workers.push(worker);
       this.availableWorkers.push(worker);
     }
@@ -52,30 +53,21 @@ export class WorkerPool {
 
   private handleWorkerMessage(worker: Worker, e: MessageEvent) {
     const { type, jobId, progress, result, error } = e.data;
-
     switch (type) {
       case "progress": {
         const callback = this.progressCallbacks.get(jobId);
-        if (callback) {
-          callback(progress);
-        }
+        if (callback) callback(progress);
         break;
       }
-
       case "complete": {
         const callback = this.resultCallbacks.get(jobId);
-        if (callback) {
-          callback({ id: jobId, blob: result });
-        }
+        if (callback) callback({ id: jobId, blob: result });
         this.finishJob(worker, jobId);
         break;
       }
-
       case "error": {
         const callback = this.resultCallbacks.get(jobId);
-        if (callback) {
-          callback({ id: jobId, blob: new Blob(), error });
-        }
+        if (callback) callback({ id: jobId, blob: new Blob(), error });
         this.finishJob(worker, jobId);
         break;
       }
@@ -85,22 +77,15 @@ export class WorkerPool {
   private handleWorkerError(worker: Worker, error: ErrorEvent) {
     console.error("Worker error:", error);
     const jobId = this.workerJobs.get(worker);
-
     if (jobId) {
       const callback = this.resultCallbacks.get(jobId);
-      if (callback) {
-        callback({
-          id: jobId,
-          blob: new Blob(),
-          error: "Worker crashed",
-        });
-      }
+      if (callback)
+        callback({ id: jobId, blob: new Blob(), error: "Worker crashed" });
       this.activeJobs.delete(jobId);
       this.progressCallbacks.delete(jobId);
       this.resultCallbacks.delete(jobId);
       this.workerJobs.delete(worker);
     }
-
     worker.terminate();
     const index = this.workers.indexOf(worker);
     if (index > -1) {
@@ -129,10 +114,8 @@ export class WorkerPool {
     while (this.jobQueue.length > 0 && this.availableWorkers.length > 0) {
       const job = this.jobQueue.shift()!;
       const worker = this.availableWorkers.shift()!;
-
       this.activeJobs.set(job.id, job);
       this.workerJobs.set(worker, job.id);
-
       worker.postMessage({
         type: "convert",
         jobId: job.id,
@@ -140,6 +123,7 @@ export class WorkerPool {
         outputFormat: job.outputFormat,
         quality: job.quality,
         conversionType: job.conversionType,
+        options: job.options,
       });
     }
   }
@@ -149,18 +133,11 @@ export class WorkerPool {
     onProgress?: (progress: number) => void,
   ): Promise<Blob> {
     return new Promise((resolve, reject) => {
-      if (onProgress) {
-        this.progressCallbacks.set(job.id, onProgress);
-      }
-
+      if (onProgress) this.progressCallbacks.set(job.id, onProgress);
       this.resultCallbacks.set(job.id, (result) => {
-        if (result.error) {
-          reject(new Error(result.error));
-        } else {
-          resolve(result.blob);
-        }
+        if (result.error) reject(new Error(result.error));
+        else resolve(result.blob);
       });
-
       this.jobQueue.push(job);
       this.processQueue();
     });
@@ -176,7 +153,6 @@ export class WorkerPool {
 
   terminate() {
     this.workers.forEach((worker) => worker.terminate());
-
     for (const [jobId, callback] of this.resultCallbacks.entries()) {
       callback({
         id: jobId,
@@ -184,7 +160,6 @@ export class WorkerPool {
         error: "Worker pool terminated",
       });
     }
-
     this.workers = [];
     this.availableWorkers = [];
     this.jobQueue = [];

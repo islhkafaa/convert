@@ -1,4 +1,5 @@
 import { RefreshCw } from "lucide-react";
+import { ThemeToggle } from "./theme-toggle";
 
 export function Header() {
   return (
@@ -13,6 +14,7 @@ export function Header() {
               <h1 className="text-3xl font-bold tracking-tight">CONVERT</h1>
             </div>
           </div>
+          <ThemeToggle />
         </div>
       </div>
     </header>
